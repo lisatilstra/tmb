@@ -1,0 +1,658 @@
+<svg style="display:none"></svg>
+<!-- TMB Itinerary Planner -->
+<style>
+  :root {
+    --glacier: #e8eef2;
+    --ice: #cfe0ea;
+    --stone: #4a5560;
+    --slate: #2b333b;
+    --ink: #1a1f24;
+    --snow: #fafbfc;
+    --rock: #7d8893;
+    --alpenglow: #d9744a;
+    --alpenglow-deep: #b85733;
+    --pine: #3f6b54;
+    --pine-light: #5b8a70;
+    --sky: #5a7d9a;
+    --line: #d2dbe2;
+    --gain: #b85733;
+    --loss: #5a7d9a;
+    --gold: #c79a4a;
+    --fr: #d9744a;
+    --it: #3f6b54;
+    --ch: #b85733;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  #tmb-root {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    line-height: 1.5;
+    max-width: 1000px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  #tmb-root .masthead {
+    border-bottom: 2px solid var(--slate);
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+  }
+  #tmb-root .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rock);
+    font-weight: 600;
+  }
+  #tmb-root h1 {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    margin: 6px 0 8px;
+    color: var(--ink);
+  }
+  #tmb-root .subtitle {
+    font-size: 14px;
+    color: var(--stone);
+    max-width: 640px;
+  }
+
+  /* Toggle */
+  #tmb-root .toggle-wrap {
+    display: flex;
+    gap: 0;
+    margin: 22px 0 6px;
+    border: 1.5px solid var(--slate);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-wrap: wrap;
+  }
+  #tmb-root .toggle-btn {
+    flex: 1 1 0;
+    min-width: 150px;
+    background: var(--snow);
+    border: none;
+    border-right: 1px solid var(--line);
+    padding: 13px 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+    font-family: inherit;
+  }
+  #tmb-root .toggle-btn:last-child { border-right: none; }
+  #tmb-root .toggle-btn:hover { background: var(--glacier); }
+  #tmb-root .toggle-btn.active { background: var(--slate); }
+  #tmb-root .toggle-btn.active .tb-name,
+  #tmb-root .toggle-btn.active .tb-meta { color: var(--snow); }
+  #tmb-root .tb-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--alpenglow-deep);
+    font-weight: 700;
+  }
+  #tmb-root .toggle-btn.active .tb-label { color: var(--gold); }
+  #tmb-root .tb-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 2px 0 1px;
+  }
+  #tmb-root .tb-meta {
+    font-size: 12px;
+    color: var(--rock);
+  }
+
+  /* Summary bar */
+  #tmb-root .summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 18px 0 8px;
+  }
+  #tmb-root .stat {
+    background: var(--snow);
+    padding: 12px 14px;
+  }
+  #tmb-root .stat-num {
+    font-family: "Georgia", serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  #tmb-root .stat-unit { font-size: 12px; color: var(--rock); font-weight: 400; }
+  #tmb-root .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--rock);
+    margin-top: 2px;
+  }
+  #tmb-root .blurb {
+    font-size: 13.5px;
+    color: var(--stone);
+    background: var(--glacier);
+    border-left: 3px solid var(--alpenglow);
+    padding: 11px 14px;
+    margin-bottom: 22px;
+  }
+
+  /* Profile strip */
+  #tmb-root .section-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rock);
+    font-weight: 600;
+    margin: 26px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #tmb-root .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  #tmb-root .profile-box {
+    border: 1px solid var(--line);
+    padding: 14px 10px 8px;
+    background: var(--snow);
+    overflow-x: auto;
+  }
+  #tmb-root svg.profile { display: block; width: 100%; height: auto; min-width: 560px; }
+
+  /* Day cards */
+  #tmb-root .days { margin-top: 6px; }
+  #tmb-root .day {
+    display: grid;
+    grid-template-columns: 54px 1fr 220px;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-top: none;
+    background: var(--snow);
+  }
+  #tmb-root .day:first-child { border-top: 1px solid var(--line); }
+  #tmb-root .day-num {
+    background: var(--slate);
+    color: var(--snow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+  }
+  #tmb-root .day-num .dn-label { font-size: 8px; letter-spacing: 0.1em; opacity: 0.7; }
+  #tmb-root .day-num .dn-val { font-family: "Georgia", serif; font-size: 24px; font-weight: 700; }
+  #tmb-root .day-body { padding: 12px 16px; border-right: 1px solid var(--line); }
+  #tmb-root .day-route {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  #tmb-root .flag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-left: 6px;
+    position: relative;
+    top: -1px;
+  }
+  #tmb-root .flag.fr { background: #f5e3da; color: var(--alpenglow-deep); }
+  #tmb-root .flag.it { background: #dfe9e2; color: var(--pine); }
+  #tmb-root .flag.ch { background: #f3ddd3; color: var(--ch); }
+  #tmb-root .day-note { font-size: 13px; color: var(--stone); margin-top: 5px; }
+  #tmb-root .day-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+  #tmb-root .tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    color: var(--stone);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  #tmb-root .tag.camp { background: #eef4f7; border-color: #cfe0ea; color: var(--sky); }
+  #tmb-root .tag.resupply { background: #f8f1e2; border-color: #e8d6ad; color: #9a7521; }
+  #tmb-root .tag.join { background: #f3ddd3; border-color: #e6c2b0; color: var(--alpenglow-deep); }
+  #tmb-root .tag.crux { background: #ecdfe8; border-color: #d6bccf; color: #8a4a78; }
+
+  /* elevation mini panel */
+  #tmb-root .day-elev {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  #tmb-root .elev-row { display: flex; align-items: center; gap: 8px; }
+  #tmb-root .elev-ico { font-size: 11px; width: 46px; color: var(--rock); font-weight: 600; letter-spacing: 0.03em; }
+  #tmb-root .elev-bar-track {
+    flex: 1;
+    height: 9px;
+    background: var(--glacier);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  #tmb-root .elev-bar { height: 100%; border-radius: 5px; }
+  #tmb-root .elev-bar.gain { background: var(--gain); }
+  #tmb-root .elev-bar.loss { background: var(--loss); }
+  #tmb-root .elev-val { font-size: 12px; font-weight: 700; width: 56px; text-align: right; font-variant-numeric: tabular-nums; }
+  #tmb-root .elev-dist {
+    font-size: 11px;
+    color: var(--rock);
+    border-top: 1px dashed var(--line);
+    padding-top: 6px;
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Schematic */
+  #tmb-root .schematic-box {
+    border: 1px solid var(--line);
+    background: var(--snow);
+    padding: 18px 12px 10px;
+    overflow-x: auto;
+  }
+  #tmb-root svg.schematic { display: block; width: 100%; height: auto; min-width: 640px; }
+  #tmb-root .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 14px;
+    font-size: 11.5px;
+    color: var(--stone);
+  }
+  #tmb-root .legend-item { display: flex; align-items: center; gap: 6px; }
+  #tmb-root .legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  #tmb-root .legend-sq { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+
+  #tmb-root .footnote {
+    font-size: 11.5px;
+    color: var(--rock);
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    line-height: 1.6;
+  }
+  #tmb-root .footnote strong { color: var(--stone); }
+
+  @media (max-width: 720px) {
+    #tmb-root .summary { grid-template-columns: repeat(2, 1fr); }
+    #tmb-root .day { grid-template-columns: 44px 1fr; }
+    #tmb-root .day-body { border-right: none; border-bottom: 1px solid var(--line); }
+    #tmb-root .day-elev { padding: 10px 14px 12px; }
+    #tmb-root .toggle-btn { min-width: 120px; }
+  }
+</style>
+
+<div id="tmb-root">
+  <div class="masthead">
+    <div class="eyebrow">Tour du Mont Blanc &middot; Counter-clockwise from Les Houches &middot; Camping</div>
+    <h1>Three Ways Around the Massif</h1>
+    <div class="subtitle">Day-by-day elevation, resupply, and join/leave points for you &amp; Brad — with handoff windows for the three part-time friends. Toggle between paces below.</div>
+  </div>
+
+  <div class="toggle-wrap" id="toggleWrap"></div>
+
+  <div class="summary" id="summary"></div>
+  <div class="blurb" id="blurb"></div>
+
+  <div class="section-label">Elevation profile — cumulative climb across the loop</div>
+  <div class="profile-box"><svg class="profile" id="profileSvg" viewBox="0 0 920 200" preserveAspectRatio="xMidYMid meet"></svg></div>
+
+  <div class="section-label">Day by day</div>
+  <div class="days" id="days"></div>
+
+  <div class="section-label">Towns, resupply &amp; friend handoff map</div>
+  <div class="schematic-box"><svg class="schematic" id="schematicSvg" viewBox="0 0 900 230" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--alpenglow)"></span>Town / village (road access)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--stone)"></span>High camp / refuge area</div>
+    <div class="legend-item"><span class="legend-sq" style="background:var(--gold)"></span>Resupply point</div>
+    <div class="legend-item"><span class="legend-sq" style="background:var(--alpenglow-deep)"></span>Friend join / leave</div>
+  </div>
+
+  <div class="footnote" id="footnote"></div>
+</div>
+
+<script>
+(function () {
+  // ---- Segment data (km, gain m, loss m) compiled from TMB stage guides ----
+  // Country: fr / it / ch
+  const ITINS = {
+    A: {
+      label: "Option A",
+      name: "Fast & Light",
+      meta: "7 days · ~24 km/day avg",
+      blurb: "Big days, minimal margin. Best for hikers comfortable with 7–9 hr on trail and back-to-back 1,000m+ climbs. Compresses the Italian and Swiss highlights; little buffer for a weather day.",
+      days: [
+        { route: "Les Houches → Les Contamines", country:"fr", km:18, gain:1000, loss:850, note:"Col de Voza / Col de Tricot variant. Gentle intro, some road walking.", camp:"Camping Le Pontet", tags:["camp","join"] },
+        { route: "Les Contamines → Les Chapieux", country:"fr", km:19, gain:1350, loss:950, note:"Col du Bonhomme + Col de la Croix du Bonhomme. Long, sustained climb.", camp:"Les Chapieux (free camping)", tags:["camp"] },
+        { route: "Les Chapieux → Courmayeur", country:"it", km:25, gain:1150, loss:1450, note:"Col de la Seigne into Italy, down Val Veni. Border crossing; long descent.", camp:"Camping near Courmayeur", tags:["camp","resupply","join"] },
+        { route: "Courmayeur → Rifugio Bonatti area", country:"it", km:13, gain:900, loss:300, note:"Steep climb to Bertone, balcony trail to Bonatti. Bivouac high.", camp:"Bivouac near Bonatti", tags:["camp","crux"] },
+        { route: "Bonatti → La Fouly", country:"ch", km:20, gain:800, loss:950, note:"Grand Col Ferret (2,537m) into Switzerland — highest point of loop.", camp:"Camping des Glaciers", tags:["camp","crux","join"] },
+        { route: "La Fouly → Champex → Trient", country:"ch", km:30, gain:1300, loss:1250, note:"Long day. Valley walk then Bovine route to Trient. Split at Champex if needed.", camp:"Bivouac near Trient", tags:["camp","resupply"] },
+        { route: "Trient → Argentière / Les Houches", country:"fr", km:18, gain:1100, loss:1300, note:"Col de Balme back into France, Aiguillette des Posettes. Loop closes.", camp:"Finish", tags:["join"] }
+      ]
+    },
+    B: {
+      label: "Option B · Recommended",
+      name: "Balanced",
+      meta: "9 days · ~19 km/day avg",
+      blurb: "The sweet spot for camping logistics and actually enjoying the route. Clean handoff points at Courmayeur, La Fouly and Champex; a short recovery day at Courmayeur; room for the Fenêtre d'Arpette variant and a weather buffer.",
+      days: [
+        { route: "Les Houches → Les Contamines", country:"fr", km:18, gain:1000, loss:850, note:"Col de Tricot variant for Bionnassay glacier views.", camp:"Camping Le Pontet", tags:["camp","join"] },
+        { route: "Les Contamines → Croix du Bonhomme", country:"fr", km:14, gain:1400, loss:300, note:"Climb the old Roman road past Nant Borrant; bivouac high near the col.", camp:"Bivouac near refuge", tags:["camp","crux"] },
+        { route: "→ Les Chapieux → Rifugio Elisabetta", country:"it", km:18, gain:900, loss:700, note:"Col de la Seigne into Italy. Bivouac below Elisabetta.", camp:"Bivouac near Elisabetta", tags:["camp"] },
+        { route: "→ Courmayeur", country:"it", km:18, gain:550, loss:1300, note:"Val Veni balcony, mostly downhill. Short recovery + resupply day.", camp:"Camping near Courmayeur", tags:["camp","resupply","join"] },
+        { route: "Courmayeur → Rifugio Bonatti", country:"it", km:13, gain:900, loss:300, note:"Mont de la Saxe high route option — one of the best viewpoints on the tour.", camp:"Bivouac near Bonatti", tags:["camp","crux"] },
+        { route: "Bonatti → La Fouly", country:"ch", km:18, gain:600, loss:950, note:"Grand Col Ferret (2,537m), highest point, into Switzerland.", camp:"Camping des Glaciers", tags:["camp","crux","join"] },
+        { route: "La Fouly → Champex", country:"ch", km:16, gain:600, loss:600, note:"Gentle Val Ferret valley day; surprise steep climb up to the lake.", camp:"Camping Les Rocailles", tags:["camp","resupply","join"] },
+        { route: "Champex → Trient", country:"ch", km:16, gain:1150, loss:1100, note:"Fenêtre d'Arpette variant (2,665m) if weather/legs allow — the crux scenic day.", camp:"Bivouac near Trient", tags:["camp","crux"] },
+        { route: "Trient → Les Houches", country:"fr", km:18, gain:1100, loss:1300, note:"Col de Balme + Aiguillette des Posettes back to the start.", camp:"Finish", tags:["join"] }
+      ]
+    },
+    C: {
+      label: "Option C",
+      name: "Relaxed & Resilient",
+      meta: "10 days · ~17 km/day avg",
+      blurb: "Maximum time on the high routes and the most buffer for the near-certain Alpine weather day. Splits the two longest pushes and gives Fenêtre d'Arpette its own day. Needs more vacation days and tighter food-carry planning.",
+      days: [
+        { route: "Les Houches → Refuge de la Balme", country:"fr", km:13, gain:850, loss:200, note:"Easy first half-day; bivouac near the refuge to split the Bonhomme climb.", camp:"Bivouac near La Balme", tags:["camp","join"] },
+        { route: "→ Les Chapieux", country:"fr", km:10, gain:700, loss:900, note:"Over Col du Bonhomme + Croix du Bonhomme with fresh legs.", camp:"Les Chapieux (free camping)", tags:["camp"] },
+        { route: "Les Chapieux → Rifugio Elisabetta", country:"it", km:15, gain:900, loss:550, note:"Col de la Seigne into Italy. Short, scenic. Bivouac high.", camp:"Bivouac near Elisabetta", tags:["camp"] },
+        { route: "→ Courmayeur", country:"it", km:18, gain:550, loss:1300, note:"Val Veni balcony down to town. Resupply + rest afternoon.", camp:"Camping near Courmayeur", tags:["camp","resupply","join"] },
+        { route: "Courmayeur → Rifugio Bonatti", country:"it", km:13, gain:900, loss:300, note:"Mont de la Saxe high route. Spectacular balcony to Bonatti.", camp:"Bivouac near Bonatti", tags:["camp","crux"] },
+        { route: "Bonatti → La Fouly", country:"ch", km:18, gain:600, loss:950, note:"Grand Col Ferret (2,537m) into Switzerland.", camp:"Camping des Glaciers", tags:["camp","crux","join"] },
+        { route: "La Fouly → Champex", country:"ch", km:16, gain:600, loss:600, note:"Easy valley day, pastoral Switzerland. Resupply at Champex.", camp:"Camping Les Rocailles", tags:["camp","resupply","join"] },
+        { route: "Champex → Fenêtre d'Arpette → Trient", country:"ch", km:14, gain:1200, loss:1300, note:"The crux variant on its own day — Trient Glacier views, steep loose descent.", camp:"Bivouac near Trient", tags:["camp","crux"] },
+        { route: "Trient → Tré-le-Champ", country:"fr", km:13, gain:800, loss:750, note:"Col de Balme back into France. Bivouac near Tré-le-Champ.", camp:"Bivouac near Tré-le-Champ", tags:["camp"] },
+        { route: "Tré-le-Champ → Les Houches", country:"fr", km:17, gain:900, loss:1100, note:"La Flégère balcony with Mont Blanc face views, down to the start.", camp:"Finish", tags:["join"] }
+      ]
+    }
+  };
+
+  const COUNTRY_NAME = { fr:"FR", it:"IT", ch:"CH" };
+
+  let current = "B";
+
+  // ---------- Toggle ----------
+  const toggleWrap = document.getElementById("toggleWrap");
+  Object.keys(ITINS).forEach(function (k) {
+    const it = ITINS[k];
+    const btn = document.createElement("button");
+    btn.className = "toggle-btn" + (k === current ? " active" : "");
+    btn.dataset.key = k;
+    btn.innerHTML =
+      '<div class="tb-label">' + it.label + '</div>' +
+      '<div class="tb-name">' + it.name + '</div>' +
+      '<div class="tb-meta">' + it.meta + '</div>';
+    btn.addEventListener("click", function () {
+      current = k;
+      document.querySelectorAll("#tmb-root .toggle-btn").forEach(function (b) {
+        b.classList.toggle("active", b.dataset.key === current);
+      });
+      render();
+    });
+    toggleWrap.appendChild(btn);
+  });
+
+  // Normalize each option's daily distances to the standard TMB loop length.
+  // Change this single value (or swap in measured GPS km per day) to re-anchor everything.
+  const TARGET_KM = 170;
+
+  // Largest-remainder rounding: scale raw estimates to the target and round so the
+  // displayed integer days still sum to exactly TARGET_KM.
+  function scaleDistances(days, target) {
+    const raw = days.map(function (d) { return d.km; });
+    const sum = raw.reduce(function (a, b) { return a + b; }, 0);
+    const scaled = raw.map(function (v) { return v * target / sum; });
+    const floors = scaled.map(Math.floor);
+    let remainder = target - floors.reduce(function (a, b) { return a + b; }, 0);
+    const order = scaled
+      .map(function (v, i) { return { i: i, frac: v - Math.floor(v) }; })
+      .sort(function (a, b) { return b.frac - a.frac; });
+    const out = floors.slice();
+    for (let k = 0; k < remainder; k++) out[order[k].i]++;
+    return out;
+  }
+
+  function totals(days) {
+    return days.reduce(function (a, d) {
+      a.km += d.skm; a.gain += d.gain; a.loss += d.loss; return a;
+    }, { km:0, gain:0, loss:0 });
+  }
+
+  function render() {
+    const it = ITINS[current];
+    // assign scaled (normalized) distance to each day before anything reads it
+    const skm = scaleDistances(it.days, TARGET_KM);
+    it.days.forEach(function (d, i) { d.skm = skm[i]; });
+    const t = totals(it.days);
+
+    // Summary
+    document.getElementById("summary").innerHTML =
+      stat(it.days.length, "days", "Duration") +
+      stat(t.km, "km", "Total distance") +
+      stat("+" + t.gain.toLocaleString(), "m", "Cumulative climb") +
+      stat(Math.round(t.gain / it.days.length), "m/day", "Avg daily gain");
+
+    document.getElementById("blurb").textContent = it.blurb;
+
+    renderProfile(it.days);
+    renderDays(it.days);
+    renderFootnote(it);
+  }
+
+  function stat(num, unit, label) {
+    return '<div class="stat"><div class="stat-num">' + num +
+      ' <span class="stat-unit">' + unit + '</span></div>' +
+      '<div class="stat-label">' + label + '</div></div>';
+  }
+
+  // ---------- Elevation profile (stepped cumulative climb) ----------
+  function renderProfile(days) {
+    const svg = document.getElementById("profileSvg");
+    const W = 920, H = 200, padL = 40, padR = 14, padT = 14, padB = 40;
+    const innerW = W - padL - padR, innerH = H - padT - padB;
+
+    const totalKm = days.reduce(function (a, d) { return a + d.skm; }, 0);
+    // Build a net-elevation walk so the profile rises and falls like real terrain
+    let pts = [{ km:0, elev:1000 }]; // Les Houches ~1000m
+    let cum = 0, elev = 1000;
+    const nodes = [{ km:0, elev:1000, label:"Start" }];
+    days.forEach(function (d) {
+      // approximate: go up then down within the segment
+      const midKm = cum + d.skm * 0.55;
+      const topElev = elev + d.gain;
+      pts.push({ km:midKm, elev:topElev });
+      elev = topElev - d.loss;
+      cum += d.skm;
+      pts.push({ km:cum, elev:elev });
+      nodes.push({ km:cum, elev:elev });
+    });
+
+    const maxElev = Math.max.apply(null, pts.map(function (p) { return p.elev; })) + 150;
+    const minElev = Math.min.apply(null, pts.map(function (p) { return p.elev; })) - 100;
+    const xOf = function (km) { return padL + (km / totalKm) * innerW; };
+    const yOf = function (e) { return padT + innerH - ((e - minElev) / (maxElev - minElev)) * innerH; };
+
+    let path = "M " + xOf(pts[0].km) + " " + yOf(pts[0].elev);
+    for (let i = 1; i < pts.length; i++) path += " L " + xOf(pts[i].km) + " " + yOf(pts[i].elev);
+    const area = path + " L " + xOf(totalKm) + " " + yOf(minElev) + " L " + xOf(0) + " " + yOf(minElev) + " Z";
+
+    // gridlines
+    let grid = "";
+    [1000, 1500, 2000, 2500].forEach(function (e) {
+      if (e > minElev && e < maxElev) {
+        const y = yOf(e);
+        grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 3"/>';
+        grid += '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="9" fill="var(--rock)">' + e + '</text>';
+      }
+    });
+
+    // day markers
+    let markers = "";
+    nodes.forEach(function (n, i) {
+      const x = xOf(n.km), y = yOf(n.elev);
+      markers += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="var(--slate)"/>';
+      if (i > 0) {
+        markers += '<text x="' + x + '" y="' + (H - padB + 16) + '" text-anchor="middle" font-size="9" font-weight="700" fill="var(--stone)">' + i + '</text>';
+      }
+    });
+    // axis labels
+    markers += '<text x="' + padL + '" y="' + (H - 6) + '" text-anchor="start" font-size="9" fill="var(--rock)">Les Houches</text>';
+    markers += '<text x="' + (W - padR) + '" y="' + (H - 6) + '" text-anchor="end" font-size="9" fill="var(--rock)">→ Les Houches (' + Math.round(totalKm) + ' km)</text>';
+    markers += '<text x="' + ((padL + W - padR)/2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="9" fill="var(--rock)">day-end elevation ·  metres</text>';
+
+    svg.innerHTML =
+      '<defs><linearGradient id="profGrad" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="var(--ice)" stop-opacity="0.85"/>' +
+        '<stop offset="100%" stop-color="var(--ice)" stop-opacity="0.1"/>' +
+      '</linearGradient></defs>' +
+      grid +
+      '<path d="' + area + '" fill="url(#profGrad)"/>' +
+      '<path d="' + path + '" fill="none" stroke="var(--slate)" stroke-width="2" stroke-linejoin="round"/>' +
+      markers;
+  }
+
+  // ---------- Day cards ----------
+  function renderDays(days) {
+    const wrap = document.getElementById("days");
+    const maxBar = Math.max.apply(null, days.map(function (d) { return Math.max(d.gain, d.loss); }));
+    wrap.innerHTML = days.map(function (d, i) {
+      const gainPct = Math.round((d.gain / maxBar) * 100);
+      const lossPct = Math.round((d.loss / maxBar) * 100);
+      const flag = '<span class="flag ' + d.country + '">' + COUNTRY_NAME[d.country] + '</span>';
+      const tags = (d.tags || []).map(function (t) { return tagHtml(t, d); }).join("");
+      return '' +
+        '<div class="day">' +
+          '<div class="day-num"><span class="dn-label">DAY</span><span class="dn-val">' + (i + 1) + '</span></div>' +
+          '<div class="day-body">' +
+            '<div class="day-route">' + d.route + flag + '</div>' +
+            '<div class="day-note">' + d.note + '</div>' +
+            '<div class="day-tags">' + tags + '</div>' +
+          '</div>' +
+          '<div class="day-elev">' +
+            elevRow("GAIN", "gain", gainPct, "+" + d.gain + " m") +
+            elevRow("LOSS", "loss", lossPct, "−" + d.loss + " m") +
+            '<div class="elev-dist"><span>' + d.skm + ' km</span><span>' + estHours(d) + '</span></div>' +
+          '</div>' +
+        '</div>';
+    }).join("");
+  }
+
+  function elevRow(label, cls, pct, val) {
+    return '<div class="elev-row">' +
+      '<span class="elev-ico">' + label + '</span>' +
+      '<span class="elev-bar-track"><span class="elev-bar ' + cls + '" style="width:' + pct + '%"></span></span>' +
+      '<span class="elev-val">' + val + '</span>' +
+    '</div>';
+  }
+
+  function estHours(d) {
+    // Naismith-ish: 4.5 km/h + 1hr per 600m gain
+    const h = d.skm / 4.5 + d.gain / 600;
+    const lo = Math.floor(h), hi = Math.ceil(h + 0.4);
+    return "~" + lo + "–" + hi + " hr";
+  }
+
+  function tagHtml(t, d) {
+    if (t === "camp") return '<span class="tag camp">⛺ ' + (d.camp || "Camp") + '</span>';
+    if (t === "resupply") return '<span class="tag resupply">🛒 Resupply</span>';
+    if (t === "join") return '<span class="tag join">👥 Friend join/leave</span>';
+    if (t === "crux") return '<span class="tag crux">▲ High pass</span>';
+    return "";
+  }
+
+  // ---------- Schematic map ----------
+  function renderSchematic() {
+    const svg = document.getElementById("schematicSvg");
+    // Fixed loop of key waypoints, counter-clockwise, laid out as a horizontal arc
+    const stops = [
+      { name:"Les Houches", x:60,  y:150, type:"town", country:"fr", resupply:true,  join:true },
+      { name:"Les Contamines", x:175, y:120, type:"town", country:"fr", resupply:true, join:true },
+      { name:"Les Chapieux", x:285, y:95, type:"camp", country:"fr" },
+      { name:"Col de la Seigne", x:380, y:70, type:"pass", country:"it" },
+      { name:"Courmayeur", x:480, y:90, type:"town", country:"it", resupply:true, join:true },
+      { name:"Rif. Bonatti", x:565, y:70, type:"camp", country:"it" },
+      { name:"Grand Col Ferret", x:640, y:55, type:"pass", country:"ch" },
+      { name:"La Fouly", x:710, y:85, type:"town", country:"ch", join:true },
+      { name:"Champex", x:780, y:115, type:"town", country:"ch", resupply:true, join:true },
+      { name:"Trient", x:840, y:150, type:"camp", country:"ch" },
+      { name:"Les Houches", x:870, y:185, type:"town", country:"fr", endpoint:true }
+    ];
+
+    // connecting path
+    let line = "M " + stops[0].x + " " + stops[0].y;
+    for (let i = 1; i < stops.length; i++) line += " L " + stops[i].x + " " + stops[i].y;
+
+    // country band shading under the path
+    let svgStr = '<path d="' + line + '" fill="none" stroke="var(--ice)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>';
+    svgStr += '<path d="' + line + '" fill="none" stroke="var(--stone)" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>';
+
+    // direction arrow
+    svgStr += '<text x="450" y="20" text-anchor="middle" font-size="10" letter-spacing="2" fill="var(--rock)">COUNTER-CLOCKWISE  →</text>';
+
+    stops.forEach(function (s) {
+      let color = "var(--stone)", r = 5;
+      if (s.type === "town") { color = "var(--alpenglow)"; r = 6.5; }
+      if (s.type === "pass") { color = "var(--slate)"; r = 4; }
+      if (s.type === "camp") { color = "var(--stone)"; r = 5; }
+
+      // resupply square (gold) behind
+      if (s.resupply) {
+        svgStr += '<rect x="' + (s.x - 10) + '" y="' + (s.y - 10) + '" width="20" height="20" rx="3" fill="none" stroke="var(--gold)" stroke-width="2"/>';
+      }
+      // join ring
+      if (s.join) {
+        svgStr += '<circle cx="' + s.x + '" cy="' + s.y + '" r="11" fill="none" stroke="var(--alpenglow-deep)" stroke-width="1.5" stroke-dasharray="2 2"/>';
+      }
+      svgStr += '<circle cx="' + s.x + '" cy="' + s.y + '" r="' + r + '" fill="' + color + '"/>';
+
+      // labels — alternate above/below to avoid overlap
+      const below = (s.y > 110);
+      const ly = below ? s.y + 22 : s.y - 16;
+      const lab = s.endpoint ? "finish" : s.name;
+      svgStr += '<text x="' + s.x + '" y="' + ly + '" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink)">' + lab + '</text>';
+      if (!s.endpoint) {
+        svgStr += '<text x="' + s.x + '" y="' + (below ? ly + 12 : ly - 11) + '" text-anchor="middle" font-size="8.5" fill="var(--rock)">' + flagWord(s.country) + '</text>';
+      }
+    });
+
+    svg.innerHTML = svgStr;
+  }
+
+  function flagWord(c) {
+    return c === "fr" ? "France" : c === "it" ? "Italy" : "Switzerland";
+  }
+
+  function renderFootnote(it) {
+    document.getElementById("footnote").innerHTML =
+      '<strong>Camping reality:</strong> Wild camping is restricted in all three countries — strictest in Switzerland (Val Ferret). The plan anchors on official campgrounds (Les Contamines, Courmayeur, La Fouly, Champex) with discreet dusk-to-dawn bivouac on the high cols between them. Pitch late, leave early, leave no trace. ' +
+      '<br><strong>Friend handoffs:</strong> The dashed orange rings mark road-accessible join/leave points — Les Contamines, Courmayeur, La Fouly and Champex all have bus or car access. Design each friend\'s segment to start and end at one of these. ' +
+      '<br><strong>Resupply:</strong> Gold squares = solid grocery stops. Carry 2–3 days of food max between Les Contamines, Courmayeur and Champex. ' +
+      '<br><strong>Numbers:</strong> Daily distances are normalized so each option sums to the standard <strong>170 km</strong> TMB loop — a defensible planning anchor until you have GPS data. The day-to-day <em>shape</em> (relative length and the elevation gain/loss) comes from standard stage guides; elevation figures are more consistent across sources than raw distances. Expect ±10% by variant. Hour estimates use a Naismith-style climb-adjusted pace assuming full camping packs (slower than day-pack guidebook times). ' +
+      '<br><strong>Late Aug / early Sep:</strong> High cols (Seigne, Grand Col Ferret, Fenêtre d\'Arpette) are usually snow-free; campsites open. Fenêtre d\'Arpette holds snow late — check conditions and keep the Bovine route as the bad-weather alternative.';
+  }
+
+  // initial paint
+  renderSchematic(); // fixed, only once
+  render();
+})();
+</script>
